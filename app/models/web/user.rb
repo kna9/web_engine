@@ -13,7 +13,7 @@ module Web
       feedbacks = feedbacks.to_a
       feedbacks = feedbacks.map(&:rating).compact.uniq
 
-      feedbacks.count > 0 ? (feedbacks.inject(:+) / feedbacks.count).to_i.to_s : '-'
+      feedbacks.count > 0 ? (feedbacks.inject(:+) / feedbacks.count).to_i : 0
     end
 
     def display_name
