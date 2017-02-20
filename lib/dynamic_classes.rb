@@ -1,5 +1,6 @@
 DataMapper.setup(:default, "postgres://db-si:efe9Quah@127.0.0.1/ecov-staging")
 # FIXME : ajouter un /current/ en prod...
+
 require_relative '/home/vagrant/si/db/models'
 #require_relative '/home/vagrant/si/db/models'
 

@@ -104,8 +104,6 @@ module Web
         ['23:45', '0:00']
       ]
 
-
-
     def time_engagement
       ((time2 - time1) / 60).to_i
     end
