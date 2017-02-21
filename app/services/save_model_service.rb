@@ -1,10 +1,8 @@
-module Web
-  class SaveModelService
-    def initialize
-    end
+class SaveModelService
+  def initialize
+  end
 
-    def perform
-      return "okok"
-    end
+  def perform
+    return "okok"
   end
 end
