@@ -1,5 +1,6 @@
 module Web
-  class Location < SI::Location
+  class Location < ActiveRecord::Base
     include Concerns::HasGeocodingProperties
+    include Concerns::HasSiSynchronization
   end
 end

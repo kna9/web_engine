@@ -1,5 +1,62 @@
 module Web
-  class Commute < SI::Commute
+  # FIME : pour ne pas fixer sur a carte des points déclarés qui ne sont pas dans les distances : récupérer les coordonnées et raccrocher au point le plus proche
+  # Web::Destination.by_distance(:origin => [49.147956, 1.994782]).first
+
+
+
+  class Commute < ActiveRecord::Base
+    include Concerns::HasSiSynchronization
+
+    def user
+      Web::User.where(id: user_id).first
+    end
+
+    # necessary--------------------
+
+    def detours
+      detours = []
+      db_detours_ids.each do |detour_id|
+        detours << Web::Destination.where(id: detour_id).first
+      end
+
+      detours
+    end
+
+    def db_detours_ids
+      Web::DbCommuteDestination.where(commute_id: id).map(&:detour_id) # self.detours.to_a.map(&:id)
+    end
+
+    def stations
+      stations = []
+      db_stations_ids.each do |station_id|
+        stations << Web::Location.where(id: station_id).first
+      end
+
+      stations
+    end
+
+    def db_stations_ids
+      Web::DbCommuteLocation.where(commute_id: id).map(&:station_id) #self.stations.to_a.map(&:id)
+    end
+
+    def start
+      Web::Destination.where(id: start_id).first
+    end
+
+    def end
+      Web::Destination.where(id: end_id).first
+    end
+
+    def name
+      "#{self.start.name} > #{self.end.name}"
+    end
+
+    # def db_class
+    #   Web::Commute.first(d: self.id)
+    # end
+
+    #-----------------------------
+
     alias_method :from, :start
     alias_method :from_city, :start
     alias_method :to, :end
@@ -103,6 +160,10 @@ module Web
         ['23:30', '23:45'],
         ['23:45', '0:00']
       ]
+
+    # def time
+    #   super.utc.strftime("%H:%M")
+    # end
 
     def time_engagement
       ((time2 - time1) / 60).to_i
@@ -232,7 +293,8 @@ module Web
         # --exclusions conditions with day_of_week || departure_time
     
         if day_of_week && day_of_week.any? 
-          unless (day_of_week & commute.dow).any? # [0,1,2,3]
+          # unless (day_of_week & commute.dow).any? # [0,1,2,3]
+          unless (day_of_week & (commute.dow ? commute.dow : [])).any? # [0,1,2,3]
             commute_ok = false
           end 
         end

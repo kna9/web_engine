@@ -1,5 +1,7 @@
 module Web
-  class User < SI::User
+  class User < ActiveRecord::Base
+    include Concerns::HasSiSynchronization
+    
     def name
       "#{first_name} #{last_name}"
     end

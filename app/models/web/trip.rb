@@ -1,5 +1,7 @@
 module Web
-  class Trip < SI::Trip
+  class Trip < ActiveRecord::Base
+    include Concerns::HasSiSynchronization
+    
     # FIXME : un peu de copier coller pour ces methodes a supprimer...
     # FIXME : extraire la config dans un fichier ou aller chercher la config du SI
     def estimated_waiting_time(dow, hour)

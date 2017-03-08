@@ -1,9 +1,6 @@
 module Web
-  class Destination < SI::Destination
+  class Destination < ActiveRecord::Base
     include Concerns::HasGeocodingProperties
-
-    def test
-      SaveModelService.new.perform
-    end
+    include Concerns::HasSiSynchronization
   end
 end
