@@ -278,6 +278,13 @@ module Web
       near_stations_ids = near_stations.map(&:id)
       near_steps_ids    = near_steps.map(&:id)
       acm               = []
+
+
+      # FIXME : 
+
+      # near_stations = []
+      # near_stations_ids = []
+
           
       Web::Commute.all.each do |commute|
         commute_ok = false
