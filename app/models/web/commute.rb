@@ -217,7 +217,7 @@ module Web
 
       pre_results.each do |commute|
         commute_ok = false
-        commute_ok = true if commute.passage_time_to_station(location) && commute.arrival_compatible(destination)
+        commute_ok = true if commute.passage_time_to_station(location) && commute.compatible(location, destination)
         
         passage_time1 = commute.time - commute.time_delta.minutes
         passage_time2 = commute.time + commute.time_delta.minutes
@@ -235,13 +235,75 @@ module Web
       return results
     end
 
-    def arrival_compatible(arrival, detour_km = KM_DETOUR)
-      theorical_waypoints.reverse_each do |commute_waypoint|
-        distance_from_waypoint_to_arrival_wich = commute_waypoint.distance_from(arrival).to_f 
-        return true if distance_from_waypoint_to_arrival_wich <= detour_km
+    #    def arrival_compatible(arrival, detour_km = KM_DETOUR)
+    #      # theorical_waypoints.reverse_each do |commute_waypoint|
+    #      #   distance_from_waypoint_to_arrival_wich = commute_waypoint.distance_from(arrival).to_f 
+    #
+    #      #   return true if distance_from_waypoint_to_arrival_wich <= detour_km
+    #      # end
+    #
+    #      # return false 
+    #      nw =  get_near_waypoint(arrival, detour_km = KM_DETOUR)
+    #
+    #      if nw
+    #        if nw.distance_from(from).to_f <= KM_DETOUR
+    #          return false
+    #        else
+    #          return true
+    #        end
+    #      else
+    #        return false
+    #      end
+    #    end
+
+
+    def compatible(departure, arrival, detour_km = KM_DETOUR)
+      commute_direction = angle_to_direction(from.heading_to(to))
+      whish_direction   = angle_to_direction(departure.heading_to(arrival))
+
+      commute_distance = to.distance_from(from).to_f
+      wish_distance    = arrival.distance_from(departure).to_f
+
+      # FIXME: bug eventuel: sud : possibilité compatible sud ouest et sud est : idem pour toutes directions 'pures'
+      if commute_direction == whish_direction && commute_distance >= wish_distance
+        return true
+      else
+        return false
+      end
+    end
+
+    def angle_to_direction(angle)
+      direction = ""
+
+      if angle == 0
+        direction = "N"
+      elsif angle > 0 && angle < 90
+        direction = "NE"
+      elsif angle == 90
+        direction = "E"
+      elsif angle > 90 && angle < 180
+        direction = "SE"
+      elsif angle == 180
+        direction = "S"
+      elsif angle > 180 && angle < 270
+        direction = "SO"
+      elsif angle == 270
+        direction = "O" 
+      elsif angle > 270 && angle < 360
+        direction = "NO" 
       end
 
-      return false 
+      return direction
+    end
+
+    def get_near_waypoint(arrival, detour_km = KM_DETOUR)
+      theorical_waypoints.reverse_each do |commute_waypoint|
+        distance_from_waypoint_to_arrival_wich = commute_waypoint.distance_from(arrival).to_f 
+
+        return commute_waypoint if distance_from_waypoint_to_arrival_wich <= detour_km
+      end
+
+      return nil 
     end
 
     def convert_coordinates_array_to_waypoints_array(coordinates_array)
@@ -310,9 +372,14 @@ module Web
 
       @theorical_waypoints   = []
       @theorical_waypoints << from
-      
-      theorical_coordinates = GeoProcessService.new.get_waypoints(from.lat, from.long, to.lat, to.long)
-         
+
+      # FIXME: peut être le vrai trajet mais très long a calculer (a stocker)
+      #route_waypoints = OSRM.route("#{from.lat},#{from.long}", "#{to.lat},#{to.long}").geometry
+      #route_waypoints.each do |route_waypoint|
+      #  @theorical_waypoints << Web::Destination.new(lat: route_waypoint.first, long: route_waypoint.last)
+      #end
+   
+      theorical_coordinates = GeoProcessService.new.get_waypoints(from.lat, from.long, to.lat, to.long)    
       theorical_coordinates.each do |coordinates_string|
         @theorical_waypoints << Web::Destination.new(lat: coordinates_string.split(',').first, long: coordinates_string.split(',').last)
       end
