@@ -24,5 +24,4 @@ class ManageSIModelService
   def check
   	@generic_rpc_client.act_si_model(@model_name, @attributes, 'check')
   end
-
 end
