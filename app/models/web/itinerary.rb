@@ -10,17 +10,6 @@ module Web
     end
 
     def waypoints_with_times(departure_time)
-      @waypoints_with_times ||= get_waypoints_with_times(departure_time)
-    end
-
-
-    def waypoints_with_distance_from_departure
-      @waypoints_with_distance_from_departure ||= get_waypoints_with_distance_from_departure
-    end
-
-    private
-
-    def get_waypoints_with_times(departure_time)
       waypoints_with_times = []
 
       waypoints_with_distance_from_departure.each do |waypoint_with_distance_from_departure|
@@ -29,6 +18,13 @@ module Web
 
       return waypoints_with_times
     end
+
+
+    def waypoints_with_distance_from_departure
+      @waypoints_with_distance_from_departure ||= get_waypoints_with_distance_from_departure
+    end
+
+    private
 
     def get_waypoints_with_distance_from_departure
       # FIXME : entre chaques points en vol d'oiseau
@@ -61,8 +57,9 @@ module Web
       return origin_time if distance_from_origin == 0
 
       time_from_origin = distance_from_origin / SPEED_AVERAGE
+      estimated_time   = origin_time + time_from_origin.hours
 
-      return origin_time + time_from_origin.hours
+      return estimated_time
     end
   end
 end

@@ -180,7 +180,6 @@ module Web
       time + time_delta.minutes
     end
 
-
     ################## COMMUTES SEARCH ENGINE
 
     def self.search_commutes(args = {})
@@ -224,28 +223,22 @@ module Web
     end
 
     def compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time)
-      compatible_departure_with_whish_initerary(whish_itinerary, whish_departure_time) && compatible_arrival_with_whish_initerary(whish_itinerary)
+      index_of_departure = index_of_passage(whish_itinerary.waypoints.first)
+      index_of_arrival   = index_of_passage(whish_itinerary.waypoints.last)
+
+      return false unless index_of_departure
+      return false unless index_of_arrival
+      return false if index_of_departure >= index_of_arrival
+
+      return compatible_departure = compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time) 
     end
 
-    def compatible_departure_with_whish_initerary(whish_itinerary, whish_departure_time)
-      #raise  itinerary.waypoints.count.inspect
-      index_of_passage = index_of_passage(whish_itinerary.waypoints.first)
+    def compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time)
+      waypoint_passage_time = itinerary.waypoints_with_times(time)[index_of_departure].last
 
-      return false unless index_of_passage
+      compatible_departure = (extract_utc_time(whish_departure_time.utc) <= (extract_utc_time(waypoint_passage_time) + time_delta.minutes)) && (extract_utc_time(whish_departure_time.utc) >= (extract_utc_time(waypoint_passage_time) - time_delta.minutes))
 
-      # raise itinerary.waypoints_with_times(whish_departure_time).count.inspect
-
-      waypoint_passage_time = itinerary.waypoints_with_times(whish_departure_time)[index_of_passage].last
-
-      return whish_departure_time <= waypoint_passage_time + time_delta.minutes && whish_departure_time >= waypoint_passage_time - time_delta.minutes
-    end
-
-    def compatible_arrival_with_whish_initerary(whish_itinerary)
-      index_of_passage = index_of_passage(whish_itinerary.waypoints.last)
-
-      return false unless index_of_passage
-
-      return true
+      return compatible_departure
     end
 
     def index_of_passage(passage_waypoint)
@@ -259,9 +252,7 @@ module Web
         end
       end
 
-      # FIXME : vérifier s'il faut faire le 'sort'
-
-      return distances_and_indexes.any? ? distances_and_indexes.first.last : nil
+      return distances_and_indexes.any? ? distances_and_indexes.sort.first.last : nil
     end
 
     def theorical_intinerary
@@ -275,7 +266,6 @@ module Web
 
     def itinerary
       # FIXME: ce champ ca être stocké en DB a terme (tableau de lat / long) / en attendant on fixe la méthode la plus rapide : vol d'oiseau 
-      # return get_itinerary_from_lat_long_waypoints
 
       @itinerary ||= theorical_intinerary
     end
@@ -310,6 +300,10 @@ module Web
 
     ################## UTILS
 
+    def extract_utc_time(utc_time)
+      utc_time.to_s.split(' ')[1].to_time.utc
+    end
+
     def get_detours
       detours = []
       db_detours_ids.each do |detour_id|
@@ -326,16 +320,6 @@ module Web
       end
 
       stations
-    end
-
-    def get_itinerary_from_lat_long_waypoints
-      waypoints_from_lat_long = []
-
-      lat_long_waypoints.each do |lat_long_waypoint|
-        Web::Destination.new(lat: lat_long_waypoint.first, long: lat_long_waypoint.last)
-      end
-
-      Web::Itinerary.new( { waypoints: waypoints_from_lat_long })
     end
   end
 end
