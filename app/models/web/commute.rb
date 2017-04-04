@@ -265,9 +265,16 @@ module Web
     end
 
     def itinerary
-      # FIXME: ce champ ca être stocké en DB a terme (tableau de lat / long) / en attendant on fixe la méthode la plus rapide : vol d'oiseau 
+      # FIXME: probleme de perf quand trop de points
+      return @itinerary if @itinerary
+      wp = []
+      wp << from
+      wp = wp + get_itinerary_from_waypoints
+      wp << to
+      @itinerary = Web::Itinerary.new( { waypoints: wp })
+      return @itinerary
 
-      @itinerary ||= theorical_intinerary
+      #@itinerary ||= theorical_intinerary
     end
 
     def compatible_dow?(day_of_week)
@@ -320,6 +327,52 @@ module Web
       end
 
       stations
+    end
+
+    def get_itinerary_from_waypoints
+      itinerary_from_waypoints = []
+
+      get_filtered_waypoints.each do |waypoint|
+        itinerary_from_waypoints << Web::Destination.new(lat: waypoint.first, long: waypoint.last)
+      end
+
+      return itinerary_from_waypoints
+    end
+
+    def get_filtered_waypoints
+      return @filtered_waypoints if @filtered_waypoints
+      return [] unless waypoints
+      return [] if waypoints == ''
+
+      @filtered_waypoints = JSON.parse(waypoints)
+
+      if @filtered_waypoints.count > 30
+        @filtered_waypoints = @filtered_waypoints.each_slice(3).map(&:last)
+      elsif @filtered_waypoints.count < 100
+        @filtered_waypoints = @filtered_waypoints.each_slice(10).map(&:last)
+      elsif @filtered_waypoints.count < 100
+        @filtered_waypoints = @filtered_waypoints.each_slice(20).map(&:last)
+      elsif @filtered_waypoints.count < 200
+        @filtered_waypoints = @filtered_waypoints.each_slice(30).map(&:last)
+      elsif @filtered_waypoints.count < 300
+        @filtered_waypoints = @filtered_waypoints.each_slice(40).map(&:last)
+      elsif @filtered_waypoints.count < 400
+        @filtered_waypoints = @filtered_waypoints.each_slice(50).map(&:last)
+      elsif @filtered_waypoints.count < 500
+        @filtered_waypoints = @filtered_waypoints.each_slice(60).map(&:last)
+      elsif @filtered_waypoints.count < 600
+        @filtered_waypoints = @filtered_waypoints.each_slice(70).map(&:last)
+      elsif @filtered_waypoints.count < 700
+        @filtered_waypoints = @filtered_waypoints.each_slice(80).map(&:last)
+      elsif @filtered_waypoints.count < 800
+        @filtered_waypoints = @filtered_waypoints.each_slice(90).map(&:last)
+      elsif @filtered_waypoints.count < 900
+        @filtered_waypoints = @filtered_waypoints.each_slice(100).map(&:last)
+      elsif @filtered_waypoints.count < 1000
+        @filtered_waypoints = @filtered_waypoints.each_slice(110).map(&:last)
+      end
+
+      return @filtered_waypoints
     end
   end
 end
