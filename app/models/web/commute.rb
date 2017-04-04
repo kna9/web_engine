@@ -347,29 +347,31 @@ module Web
       @filtered_waypoints = JSON.parse(waypoints)
 
       if @filtered_waypoints.count > 30
+        if @filtered_waypoints.count < 100
+          @filtered_waypoints = @filtered_waypoints.each_slice(10).map(&:last)
+        elsif @filtered_waypoints.count < 100
+          @filtered_waypoints = @filtered_waypoints.each_slice(20).map(&:last)
+        elsif @filtered_waypoints.count < 200
+          @filtered_waypoints = @filtered_waypoints.each_slice(30).map(&:last)
+        elsif @filtered_waypoints.count < 300
+          @filtered_waypoints = @filtered_waypoints.each_slice(40).map(&:last)
+        elsif @filtered_waypoints.count < 400
+          @filtered_waypoints = @filtered_waypoints.each_slice(50).map(&:last)
+        elsif @filtered_waypoints.count < 500
+          @filtered_waypoints = @filtered_waypoints.each_slice(60).map(&:last)
+        elsif @filtered_waypoints.count < 600
+          @filtered_waypoints = @filtered_waypoints.each_slice(70).map(&:last)
+        elsif @filtered_waypoints.count < 700
+          @filtered_waypoints = @filtered_waypoints.each_slice(80).map(&:last)
+        elsif @filtered_waypoints.count < 800
+          @filtered_waypoints = @filtered_waypoints.each_slice(90).map(&:last)
+        elsif @filtered_waypoints.count < 900
+          @filtered_waypoints = @filtered_waypoints.each_slice(100).map(&:last)
+        elsif @filtered_waypoints.count >= 900
+          @filtered_waypoints = @filtered_waypoints.each_slice(110).map(&:last)
+        end
+      else
         @filtered_waypoints = @filtered_waypoints.each_slice(3).map(&:last)
-      elsif @filtered_waypoints.count < 100
-        @filtered_waypoints = @filtered_waypoints.each_slice(10).map(&:last)
-      elsif @filtered_waypoints.count < 100
-        @filtered_waypoints = @filtered_waypoints.each_slice(20).map(&:last)
-      elsif @filtered_waypoints.count < 200
-        @filtered_waypoints = @filtered_waypoints.each_slice(30).map(&:last)
-      elsif @filtered_waypoints.count < 300
-        @filtered_waypoints = @filtered_waypoints.each_slice(40).map(&:last)
-      elsif @filtered_waypoints.count < 400
-        @filtered_waypoints = @filtered_waypoints.each_slice(50).map(&:last)
-      elsif @filtered_waypoints.count < 500
-        @filtered_waypoints = @filtered_waypoints.each_slice(60).map(&:last)
-      elsif @filtered_waypoints.count < 600
-        @filtered_waypoints = @filtered_waypoints.each_slice(70).map(&:last)
-      elsif @filtered_waypoints.count < 700
-        @filtered_waypoints = @filtered_waypoints.each_slice(80).map(&:last)
-      elsif @filtered_waypoints.count < 800
-        @filtered_waypoints = @filtered_waypoints.each_slice(90).map(&:last)
-      elsif @filtered_waypoints.count < 900
-        @filtered_waypoints = @filtered_waypoints.each_slice(100).map(&:last)
-      elsif @filtered_waypoints.count < 1000
-        @filtered_waypoints = @filtered_waypoints.each_slice(110).map(&:last)
       end
 
       return @filtered_waypoints
