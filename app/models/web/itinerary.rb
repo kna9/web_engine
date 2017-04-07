@@ -1,7 +1,7 @@
 module Web
   class Itinerary
     SPEED_AVERAGE = 50
-    KM_DETOUR_MIN = 0
+    KM_DETOUR_MIN = 1
 
     attr_accessor :waypoints
 

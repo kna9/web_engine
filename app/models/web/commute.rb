@@ -236,9 +236,29 @@ module Web
     def compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time)
       waypoint_passage_time = itinerary.waypoints_with_times(time)[index_of_departure].last
 
-      compatible_departure = (extract_utc_time(whish_departure_time.utc) <= (extract_utc_time(waypoint_passage_time) + time_delta.minutes)) && (extract_utc_time(whish_departure_time.utc) >= (extract_utc_time(waypoint_passage_time) - time_delta.minutes))
+      # #########################################################################
+
+      # FIXME: compatible : -+ 1/2 heure de wish_departure_time
+      # FIXME: classé par éloignement de l'heure désirée
+
+      # on part du principe que whish_departure_time : w- et w+ (bornes)
+
+      whish_time = extract_utc_time(whish_departure_time.utc)
+      
+      whish_time_min = whish_time - 30.minutes
+      whish_time_max = whish_time + 30.minutes
+
+      min_time = extract_utc_time(waypoint_passage_time) - time_delta.minutes
+      max_time = extract_utc_time(waypoint_passage_time) + time_delta.minutes
+      
+      compatible_departure = (min_time >= whish_time_min && min_time <= whish_time_max) || (max_time >= whish_time_min && max_time <= whish_time_max)
 
       return compatible_departure
+
+      # #########################################################################
+
+      # compatible_departure = (extract_utc_time(whish_departure_time.utc) <= (extract_utc_time(waypoint_passage_time) + time_delta.minutes)) && (extract_utc_time(whish_departure_time.utc) >= (extract_utc_time(waypoint_passage_time) - time_delta.minutes))
+      # return compatible_departure
     end
 
     def index_of_passage(passage_waypoint)
@@ -290,8 +310,12 @@ module Web
     end
 
     def detour_kilometers
+      # [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 15, 20, 22, 26, 27, 30, 60, 120, 240, 300, 360, 420, 480, 540, 600, 660, 900, 1140]
+      borned_detour_delta = detour_delta
+      borned_detour_delta = 30 if borned_detour_delta > 30
+
       # detour_delta : approx km detour (A/R point detour) - décorellée des temps de passage
-      detour_commuted = (detour_delta.to_f * (Web::Itinerary::SPEED_AVERAGE.to_f/60.to_f).to_f) / 2 
+      detour_commuted = (borned_detour_delta.to_f * (Web::Itinerary::SPEED_AVERAGE.to_f/60.to_f).to_f) / 2 
       detour_min      = Web::Itinerary::KM_DETOUR_MIN.to_f
 
       detour_kilometers = if detour_commuted <= detour_min
