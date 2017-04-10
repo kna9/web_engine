@@ -250,7 +250,7 @@ module Web
       # on part du principe que whish_departure_time : w- et w+ (bornes)
 
       whish_time = extract_utc_time(whish_departure_time.utc)
-      
+
       whish_time_min = whish_time - 30.minutes
       whish_time_max = whish_time + 30.minutes
 
@@ -271,7 +271,7 @@ module Web
       distances_and_indexes = []
 
       itinerary.waypoints.each_with_index do |waypoint, index|
-        processed_distance = waypoint.distance_from(passage_waypoint).to_f
+        processed_distance = waypoint.distance_from(passage_waypoint).to_f + 1,6
 
         if processed_distance <= detour_kilometers
           distances_and_indexes << [processed_distance, index]
