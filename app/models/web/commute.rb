@@ -195,7 +195,13 @@ module Web
 
       results = []
 
-      whish_itinerary = GeoProcessService.new.osrm_itinerary(whish_location, whish_destination)
+      whish_itinerary = []
+
+      begin
+        whish_itinerary = GeoProcessService.new.osrm_itinerary(whish_location, whish_destination)
+      rescue
+        whish_itinerary = GeoProcessService.new.theorical_itinerary(whish_location, whish_destination)
+      end
 
       Web::Commute.dow_compatible(whish_day_of_week).each do |commute|
         results << commute if commute.compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time)
