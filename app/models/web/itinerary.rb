@@ -41,7 +41,7 @@ module Web
           distance_from_origin_to_waypoint = if i == 0
             0
           else
-            distance_from_origin_to_waypoint + (waypoints[i - 1].distance_from(waypoints[i]).to_f * 1,6)
+            distance_from_origin_to_waypoint + (waypoints[i - 1].distance_from(waypoints[i]).to_f * 1.6)
           end   
         end
 
