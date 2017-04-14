@@ -182,16 +182,31 @@ module Web
 
     ################## COMMUTES SEARCH ENGINE
 
+    def self.extract_utc_time(utc_time)
+      utc_time.to_s.split(' ')[1].to_time.utc
+    end
+
     def self.search_commutes(args = {})
       whish_location       = args[:location]
       whish_destination    = args[:destination]
       whish_day_of_week    = args[:dow]
-      whish_departure_time = args[:time].to_time if args[:time]
+
+      whish_departure_time     = args[:time].to_time if args[:time]
+      whish_departure_time_max = args[:time_max].to_time if args[:time_max]
 
       return [] unless whish_location
       return [] unless whish_destination
       return [] unless whish_day_of_week
       return [] unless whish_departure_time
+
+      whish_departure_time    = extract_utc_time(whish_departure_time.utc)
+      wish_departure_time_min = whish_departure_time - 30.minutes
+      wish_departure_time_max = whish_departure_time + 30.minutes
+
+      if whish_departure_time_max
+        wish_departure_time_min = whish_departure_time
+        wish_departure_time_max = extract_utc_time(whish_departure_time_max.utc)
+      end
 
       results = []
 
@@ -204,11 +219,23 @@ module Web
       end
 
       Web::Commute.dow_compatible(whish_day_of_week).each do |commute|
-        results << commute if commute.compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time)
+        results << commute if commute.compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, wish_departure_time_min, wish_departure_time_max)
       end
 
       return results
     end
+
+    def self.search_commutes_from_location(location)
+      return [] unless location
+
+      Web::Commute.all.each do |commute|
+        results << commute if commute.compatible_location(location)
+      end
+
+      return results
+    end
+
+    ##################
 
     def self.dow_compatible(day_of_week)
       compatible_dow_commutes = []
@@ -228,7 +255,15 @@ module Web
       return itinerary.waypoints_with_times(time)[index_of_passage].last
     end
 
-    def compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time)
+    def compatible_location(location)
+      index_of_departure = index_of_passage(location)
+
+      # FIXME : va retourner beaucoup de result...
+
+      return index_of_departure ? true : false
+    end
+
+    def compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time_min, whish_departure_time_max)
       index_of_departure = index_of_passage(whish_itinerary.waypoints.first)
       index_of_arrival   = index_of_passage(whish_itinerary.waypoints.last)
 
@@ -236,35 +271,19 @@ module Web
       return false unless index_of_arrival
       return false if index_of_departure >= index_of_arrival
 
-      return compatible_departure = compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time) 
+      return compatible_departure = compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time_min, whish_departure_time_max) 
     end
 
-    def compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time)
+    def compatible_departure_with_whish_initerary(index_of_departure, whish_departure_time_min, whish_departure_time_max)
       waypoint_passage_time = itinerary.waypoints_with_times(time)[index_of_departure].last
-
-      # #########################################################################
-
-      # FIXME: compatible : -+ 1/2 heure de wish_departure_time
       # FIXME: classé par éloignement de l'heure désirée
 
-      # on part du principe que whish_departure_time : w- et w+ (bornes)
-
-      whish_time = extract_utc_time(whish_departure_time.utc)
-
-      whish_time_min = whish_time - 30.minutes
-      whish_time_max = whish_time + 30.minutes
-
-      min_time = extract_utc_time(waypoint_passage_time) - time_delta.minutes
-      max_time = extract_utc_time(waypoint_passage_time) + time_delta.minutes
+      min_time = Web::Commute.extract_utc_time(waypoint_passage_time) - time_delta.minutes
+      max_time = Web::Commute.extract_utc_time(waypoint_passage_time) + time_delta.minutes
       
-      compatible_departure = (min_time >= whish_time_min && min_time <= whish_time_max) || (max_time >= whish_time_min && max_time <= whish_time_max)
+      compatible_departure = (min_time >= whish_departure_time_min && min_time <= whish_departure_time_max) || (max_time >= whish_departure_time_min && max_time <= whish_departure_time_max)
 
       return compatible_departure
-
-      # #########################################################################
-
-      # compatible_departure = (extract_utc_time(whish_departure_time.utc) <= (extract_utc_time(waypoint_passage_time) + time_delta.minutes)) && (extract_utc_time(whish_departure_time.utc) >= (extract_utc_time(waypoint_passage_time) - time_delta.minutes))
-      # return compatible_departure
     end
 
     def index_of_passage(passage_waypoint)
@@ -336,10 +355,6 @@ module Web
     private
 
     ################## UTILS
-
-    def extract_utc_time(utc_time)
-      utc_time.to_s.split(' ')[1].to_time.utc
-    end
 
     def get_detours
       detours = []
