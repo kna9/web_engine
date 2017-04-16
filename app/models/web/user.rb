@@ -1,6 +1,8 @@
 module Web
   class User < ActiveRecord::Base
     include Concerns::HasSiSynchronization
+
+    has_many :promo_codes
     
     def name
       "#{first_name} #{last_name}"
@@ -38,5 +40,9 @@ module Web
     def confirm!
       update(confirmed_at: Time.now)
     end
+
+    def promo_code
+      promo_codes.map(&:promo_code).join(', ')
+    end 
   end
 end
