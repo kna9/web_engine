@@ -63,6 +63,11 @@ module Concerns
 
         processed_attributes = attributes
 
+        processed_attributes.delete("avatar_file_name")
+        processed_attributes.delete("avatar_content_type")
+        processed_attributes.delete("avatar_file_size")
+        processed_attributes.delete("avatar_updated_at")
+
         if si_class_name == 'Commute'
           if  processed_attributes['time']
             processed_attributes['time'] = processed_attributes['time'].utc.strftime("%H:%M")
@@ -71,15 +76,16 @@ module Concerns
           end
         end
 
-        if valid?
-          
+        raise processed_attributes.inspect
+
+        #if valid?
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
           return true
-        else
-          # self.id = nil
-          return false
-        end
+        #else
+        #  # self.id = nil
+        #  return false
+        #end
       end
 
       def si_class_name
