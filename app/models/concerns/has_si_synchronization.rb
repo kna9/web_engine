@@ -76,8 +76,6 @@ module Concerns
           end
         end
 
-        raise processed_attributes.inspect
-
         #if valid?
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
