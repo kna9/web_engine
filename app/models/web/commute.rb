@@ -389,7 +389,16 @@ module Web
       return [] unless waypoints
       return [] if waypoints == ''
 
-      @filtered_waypoints = JSON.parse(waypoints)
+       @filtered_waypoints = nil
+
+      begin
+        @filtered_waypoints = JSON.parse(waypoints)
+      rescue
+        @filtered_waypoints = nil
+      end
+
+      return [] unless @filtered_waypoints
+
 
       if @filtered_waypoints.count > 30
         if @filtered_waypoints.count < 100
