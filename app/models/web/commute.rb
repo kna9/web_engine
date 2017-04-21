@@ -7,6 +7,34 @@ module Web
 
     include Concerns::HasSiSynchronization
 
+    after_save :save_all_commute_locations
+    after_create :save_all_commute_locations
+
+    def save_all_commute_locations
+      Web::Location.all.each do |location|
+        save_commute_location_link(location)
+      end
+    end
+
+    def save_commute_location_link(location)
+      existing_record = CommutesLocation.where(commute_id: id, location_id: location.id).first
+
+      if is_compatible_commute(location)
+        unless existing_record
+          commutes_location = CommutesLocation.new(commute_id: id, location_id: location.id)
+          commutes_location.save
+        end
+      else
+        if existing_record
+          existing_record.delete
+        end
+      end
+    end
+
+    def compatible_locations
+      Web::Location.where(id: CommutesLocation.where(commute_id: id).map(&:location_id))
+    end
+
     def user
       @user ||= Web::User.where(id: user_id).first
     end
@@ -225,16 +253,6 @@ module Web
       return results
     end
 
-    def self.search_commutes_from_location(location)
-      return [] unless location
-
-      Web::Commute.all.each do |commute|
-        results << commute if commute.compatible_location(location)
-      end
-
-      return results
-    end
-
     ##################
 
     def self.dow_compatible(day_of_week)
@@ -255,7 +273,7 @@ module Web
       return itinerary.waypoints_with_times(time)[index_of_passage].last
     end
 
-    def compatible_location(location)
+    def is_compatible_commute(location)
       index_of_departure = index_of_passage(location)
 
       # FIXME : va retourner beaucoup de result...
@@ -398,7 +416,6 @@ module Web
       end
 
       return [] unless @filtered_waypoints
-
 
       if @filtered_waypoints.count > 30
         if @filtered_waypoints.count < 100
