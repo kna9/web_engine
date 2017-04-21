@@ -184,6 +184,10 @@ module Web
       passage_time_to_station(location) + time_delta.minutes
     end
 
+    def formated_departure_time
+      formated_time(time)
+    end
+
     def formated_time(param_time)
       param_time.to_s.split(' ')[1].split(':')[0..1].join('H').gsub('H00','H')
     end
