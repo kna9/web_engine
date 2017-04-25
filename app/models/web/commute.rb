@@ -224,7 +224,7 @@ module Web
       whish_day_of_week    = args[:dow]
 
       whish_departure_time     = args[:time].to_time if args[:time]
-      whish_departure_time_max = args[:time_max].to_time if args[:time_max]
+      param_whish_departure_time_max = args[:time_max].to_time if args[:time_max]
 
       return [] unless whish_location
       return [] unless whish_destination
@@ -232,12 +232,12 @@ module Web
       return [] unless whish_departure_time
 
       whish_departure_time    = extract_utc_time(whish_departure_time.utc)
-      wish_departure_time_min = whish_departure_time - 30.minutes
-      wish_departure_time_max = whish_departure_time + 30.minutes
+      whish_departure_time_min = whish_departure_time - 30.minutes
+      whish_departure_time_max = whish_departure_time + 30.minutes
 
-      if whish_departure_time_max
+      if param_whish_departure_time_max
         wish_departure_time_min = whish_departure_time
-        wish_departure_time_max = extract_utc_time(whish_departure_time_max.utc)
+        wish_departure_time_max = extract_utc_time(param_whish_departure_time_max.utc)
       end
 
       results = []
@@ -251,7 +251,7 @@ module Web
       end
 
       Web::Commute.dow_compatible(whish_day_of_week).each do |commute|
-        results << commute if commute.compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, wish_departure_time_min, wish_departure_time_max)
+        results << commute if commute.compatible_departure_and_arrival_with_whish_itinerary(whish_itinerary, whish_departure_time_min, whish_departure_time_max)
       end
 
       return results
