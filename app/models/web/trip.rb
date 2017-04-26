@@ -2,7 +2,11 @@ module Web
   class Trip < ActiveRecord::Base
     include Concerns::HasSiSynchronization
 
-    #    def self.max_flow_for_location(location, dow = 2)
+    def self.flow_for_location(location, dow = 2)
+
+    end
+
+    def self.max_flow_for_location(location, dow = 2)
     #      all_trips = Web::Trip.where(location_id: location.id)
     #      puts all_trips.count
     #      flws     = []
@@ -14,7 +18,7 @@ module Web
     #      end
     #
     #      return flws.uniq.map(&:to_f).max
-    #    end
+    end
     
     # FIXME : un peu de copier coller pour ces methodes a supprimer...
     # FIXME : extraire la config dans un fichier ou aller chercher la config du SI

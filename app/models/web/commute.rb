@@ -236,8 +236,8 @@ module Web
       whish_departure_time_max = whish_departure_time + 30.minutes
 
       if param_whish_departure_time_max
-        wish_departure_time_min = whish_departure_time
-        wish_departure_time_max = extract_utc_time(param_whish_departure_time_max.utc)
+        whish_departure_time_min = whish_departure_time
+        whish_departure_time_max = extract_utc_time(param_whish_departure_time_max.utc)
       end
 
       results = []
