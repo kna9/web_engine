@@ -7,8 +7,10 @@ module Web
 
     include Concerns::HasSiSynchronization
 
-    after_save :save_all_commute_locations
-    after_create :save_all_commute_locations
+    #after_save :save_all_commute_locations
+    #after_create :save_all_commute_locations
+
+    # FIXME : test and add after_save (save_all_commute_locations)
 
     def save_all_commute_locations
       Web::Location.all.each do |location|
@@ -30,6 +32,38 @@ module Web
         end
       end
     end
+
+    def save_detours
+      # raise detours.inspect
+      # saved_detours  = DbCommuteDestination.where(commute_user_id: user_id, commute_id: id)
+
+      ActiveRecord::Base.connection.execute("delete from db_commute_destinations where commute_user_id=#{user_id} and commute_id=#{id}")
+
+
+      #saved_detours.each do |saved_detour|
+      #  saved_detour.delete
+      #end
+
+      detours.each do |detour_destination|
+        location_to_save = DbCommuteDestination.new(commute_user_id: user_id, commute_id: id, detour_id: detour_destination.id)
+        location_to_save.save
+      end
+    end
+
+    def save_stations
+      #saved_stations = DbCommuteLocation.where(commute_user_id: user_id, commute_id: id)
+      #saved_stations.each do |saved_station|
+      #  saved_station.delete
+      #end
+
+      ActiveRecord::Base.connection.execute("delete from db_commute_locations where commute_user_id=#{user_id} and commute_id=#{id}")
+
+      stations.each do |station_location|
+        station_to_save = DbCommuteLocation.new(commute_user_id: user_id, commute_id: id, station_id: station_location.id)
+        station_to_save.save
+      end
+    end
+
 
     def compatible_locations
       Web::Location.where(id: CommutesLocation.where(commute_id: id).map(&:location_id))

@@ -77,9 +77,10 @@ module Concerns
         end
 
         #if valid?
-          si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
+        si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
+          
 
-          return true
+        return true
         #else
         #  # self.id = nil
         #  return false
