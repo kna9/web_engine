@@ -38,7 +38,11 @@ module Web
         ActiveRecord::Base.connection.execute("delete from db_commute_destinations where commute_user_id=#{user_id} and commute_id=#{commute_id}")
         detours.each do |detour_destination|
           location_to_save = DbCommuteDestination.new(commute_user_id: user_id, commute_id: commute_id, detour_id: detour_destination.id)
-          location_to_save.save
+          begin
+            location_to_save.save
+          rescue
+            true
+          end
         end
       end
     end
@@ -48,7 +52,11 @@ module Web
         ActiveRecord::Base.connection.execute("delete from db_commute_locations where commute_user_id=#{user_id} and commute_id=#{commute_id}")
         stations.each do |station_location|
           station_to_save = DbCommuteLocation.new(commute_user_id: user_id, commute_id: commute_id, station_id: station_location.id)
-          station_to_save.save
+          begin
+            station_to_save.save
+          rescue
+            true
+          end
         end
       end
     end

@@ -84,6 +84,10 @@ module Concerns
 
         if response_code == 200
           feedback = true
+
+          if si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
+            feedback = si_response.response_object['results']['id']
+          end
         elsif response_code == 201
           feedback = si_response.response_object['results']['id']
         elsif response_code == 500
