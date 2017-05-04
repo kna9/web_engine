@@ -4,6 +4,7 @@ class GenericRpcClient < SiClient
   def act_si_model(model_name, arguments, action)
     status_messages = {
       200 => "OK",
+      201 => "Modified",
       500 => "Not found"
     }
 

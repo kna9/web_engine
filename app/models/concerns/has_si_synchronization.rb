@@ -77,10 +77,22 @@ module Concerns
         end
 
         #if valid?
-        si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
-          
+        si_response   = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
+        response_code = si_response.status_code
 
-        return true
+        feedback = true
+
+        if response_code == 200
+          feedback = true
+        elsif response_code == 201
+          feedback = si_response.response_object['results']['id']
+        elsif response_code == 500
+          feedback = false
+        else
+          feedback = false
+        end
+
+        return feedback
         #else
         #  # self.id = nil
         #  return false
