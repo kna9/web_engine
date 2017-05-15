@@ -43,6 +43,8 @@ module Concerns
       def valid?
         si_response = ManageSIModelService.new(si_class_name, @token, attributes).check
 
+        # raise si_response.inspect
+
         si_results  = si_response.response_object['results']
         validity    = si_results['validity']
         @errors     = validity ? nil : si_results["errors"] 
@@ -68,6 +70,7 @@ module Concerns
         processed_attributes.delete("avatar_file_size")
         processed_attributes.delete("avatar_updated_at")
 
+
         if si_class_name == 'Commute'
           if  processed_attributes['time']
             processed_attributes['time'] = processed_attributes['time'].utc.strftime("%H:%M")
@@ -76,31 +79,14 @@ module Concerns
           end
         end
 
-        #if valid?
-        si_response   = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
-        response_code = si_response.status_code
+        if valid? 
+          si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
-        feedback = true
-
-        if response_code == 200
-          feedback = true
-
-          if si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
-            feedback = si_response.response_object['results']['id']
-          end
-        elsif response_code == 201
-          feedback = si_response.response_object['results']['id']
-        elsif response_code == 500
-          feedback = false
+          return true
         else
-          feedback = false
+          # self.id = nil
+          return false
         end
-
-        return feedback
-        #else
-        #  # self.id = nil
-        #  return false
-        #end
       end
 
       def si_class_name

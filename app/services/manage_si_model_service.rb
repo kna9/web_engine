@@ -14,14 +14,14 @@ class ManageSIModelService
   end
 
   def del
-  	@generic_rpc_client.act_si_model(@model_name, @attributes, 'del')
+    @generic_rpc_client.act_si_model(@model_name, @attributes, 'del')
   end
 
   def put
-  	@generic_rpc_client.act_si_model(@model_name, @attributes, 'put')
+    @generic_rpc_client.act_si_model(@model_name, @attributes, 'put')
   end
 
   def check
-  	@generic_rpc_client.act_si_model(@model_name, @attributes, 'check')
+    @generic_rpc_client.act_si_model(@model_name, @attributes, 'check')
   end
 end
