@@ -43,8 +43,6 @@ module Concerns
       def valid?
         si_response = ManageSIModelService.new(si_class_name, @token, attributes).check
 
-        # raise si_response.inspect
-
         si_results  = si_response.response_object['results']
         validity    = si_results['validity']
         @errors     = validity ? nil : si_results["errors"] 
@@ -82,7 +80,11 @@ module Concerns
         if valid? 
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
-          return true
+          if si_response && si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
+            return si_response.response_object['results']['id']
+          else
+            return true
+          end
         else
           # self.id = nil
           return false
