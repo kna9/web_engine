@@ -41,7 +41,14 @@ module Concerns
       end
 
       def valid?
-        si_response = ManageSIModelService.new(si_class_name, @token, attributes).check
+        p_attributes = attributes
+                                     
+        p_attributes.delete("avatar_file_name")
+        p_attributes.delete("avatar_content_type")
+        p_attributes.delete("avatar_file_size")
+        p_attributes.delete("avatar_updated_at")
+
+        si_response = ManageSIModelService.new(si_class_name, @token, p_attributes).check
 
         si_results  = si_response.response_object['results']
         validity    = si_results['validity']
@@ -62,12 +69,11 @@ module Concerns
         # self.id = new_id unless self.id
 
         processed_attributes = attributes
-
+                                     
         processed_attributes.delete("avatar_file_name")
         processed_attributes.delete("avatar_content_type")
         processed_attributes.delete("avatar_file_size")
         processed_attributes.delete("avatar_updated_at")
-
 
         if si_class_name == 'Commute'
           if  processed_attributes['time']
