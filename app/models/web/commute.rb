@@ -117,7 +117,7 @@ module Web
       ['22:00', '22:15'], ['22:15', '22:30'], ['22:30', '22:45'], ['22:45', '23:00'], ['23:00', '23:15'], ['23:15', '23:30'], ['23:30', '23:45'], ['23:45', '0:00']
     ]
 
-    ################## REPORTS
+    ################## REPORTS & EQUIVALENT CONDUCTEURS
 
     def time_engagement
       ((time2 - time1) / 60).to_i
@@ -145,6 +145,10 @@ module Web
       end
 
       ec_sum
+    end
+
+    def ec_moy
+      QUARTERS.count.to_i == 0 ? 0 : ec_sum / QUARTERS.count.to_i
     end
 
     def converted_time
