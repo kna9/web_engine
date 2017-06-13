@@ -346,7 +346,7 @@ module Web
       distances_and_indexes = []
 
       itinerary.waypoints.each_with_index do |waypoint, index|
-        processed_distance = waypoint.distance_from(passage_waypoint).to_f + 1.6
+        processed_distance = waypoint.distance_from(passage_waypoint).to_f * 1.6
 
         if processed_distance <= detour_kilometers
           distances_and_indexes << [processed_distance, index]
@@ -393,7 +393,8 @@ module Web
     def detour_kilometers
       # [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 15, 20, 22, 26, 27, 30, 60, 120, 240, 300, 360, 420, 480, 540, 600, 660, 900, 1140]
       borned_detour_delta = detour_delta
-      borned_detour_delta = 30 if borned_detour_delta > 30
+      # borned_detour_delta = 30 if borned_detour_delta > 30
+      borned_detour_delta = 20 if borned_detour_delta > 20
 
       # detour_delta : approx km detour (A/R point detour) - décorellée des temps de passage
       detour_commuted = (borned_detour_delta.to_f * (Web::Itinerary::SPEED_AVERAGE.to_f/60.to_f).to_f) / 2 
