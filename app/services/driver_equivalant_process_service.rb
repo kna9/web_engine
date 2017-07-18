@@ -31,13 +31,35 @@ class DriverEquivalantProcessService
   def process_driver_equivalant_per_quarters # FIXME : change ec >> driver_equivalant
     @driver_equivalants_per_quaters = {}
 
-    quarters_times_intervals.each do |t|
-      @driver_equivalants_per_quaters[t] = process_driver_equivalant(t.first.to_time, t.last.to_time)
+    quarters_times_intervals.each do |interval|
+      @driver_equivalants_per_quaters[interval] = process_driver_equivalant(interval.first.to_time, interval.last.to_time) 
     end
+
+    check_driver_equivalant_doublons
   end
 
   def process_driver_equivalant(time_min, time_max)
     (time_min..time_max).include?(@converted_time) ? driver_equivalant_value : 0
+  end
+
+  def check_driver_equivalant_doublons
+    # FIXME : verifiy if it is the true rule
+    return if time_engagement > 15
+
+    @new_driver_equivalants_per_quarters = {}
+
+    quarter_done = false
+
+    @driver_equivalants_per_quaters.each do |key, value|
+      if value > 0 && !quarter_done
+        @new_driver_equivalants_per_quarters[key] = value
+        quarter_done = true
+      else
+        @new_driver_equivalants_per_quarters[key] = 0
+      end
+    end
+
+    @driver_equivalants_per_quaters = @new_driver_equivalants_per_quarters
   end
 
   def driver_equivalant_value
