@@ -10,7 +10,7 @@ module Web
     validates :selected_date, presence: true
     validates :start_id, presence: true
     validates :end_id, presence: true
-    validates :user_id, presence: true
+    #validates :user_id, presence: true
     validates :from_name, presence: true
     validates :to_name, presence: true
     validates :confirmed, presence: true

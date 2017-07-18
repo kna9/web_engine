@@ -8,7 +8,7 @@ class GenericRpcClient < SiClient
       500 => "Not found"
     }
 
-    call 'generic_model.action', status_messages, action: action, model_name: model_name, authentication_token: @authentication_token, arguments: arguments, application_name: Rails.application.class.parent_name, authentication_token: authentication_token
+    call 'generic_model.action', status_messages, action: action, model_name: model_name, authentication_token: @authentication_token, arguments: arguments, application_name: Rails.application.class.parent_name
   end
 
   def channel_name
