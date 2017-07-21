@@ -17,7 +17,7 @@ module Web
     validates :version, presence: true
     # validates :referer, presence: true
     validates :remote_ip, presence: true
-    validates :selected_date, presence: true
+    # validates :selected_date, presence: true
 
     def set_nb_results(nb_results)
       self.nb_results = nb_results
