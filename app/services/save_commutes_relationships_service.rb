@@ -37,11 +37,11 @@ class SaveCommutesRelationshipsService
   private
 
   def save_commute_location_link(location)
-    existing_record = CommutesLocation.where(commute_id: @commute.id, location_id: location.id).first
+    existing_record = ::CommutesLocation.where(commute_id: @commute.id, location_id: location.id).first
 
     if @commute.is_compatible_commute(location)
       unless existing_record
-        commutes_location = CommutesLocation.new(commute_id: @commute.id, location_id: location.id)
+        commutes_location = ::CommutesLocation.new(commute_id: @commute.id, location_id: location.id)
         commutes_location.save
       end
     else
@@ -57,9 +57,9 @@ class SaveCommutesRelationshipsService
 
   def new_entity_relationship(entity)
     if @entities_type == :detours
-      DbCommuteDestination.new(commute_user_id: @user_id, commute_id: @commute_id, detour_id: entity.id)
+      ::DbCommuteDestination.new(commute_user_id: @user_id, commute_id: @commute_id, detour_id: entity.id)
     elsif @entities_type == :stations
-      DbCommuteLocation.new(commute_user_id: @user_id, commute_id: @commute_id, station_id: entity.id)
+      ::DbCommuteLocation.new(commute_user_id: @user_id, commute_id: @commute_id, station_id: entity.id)
     end
   end
 
