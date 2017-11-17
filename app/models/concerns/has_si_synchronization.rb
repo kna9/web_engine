@@ -42,7 +42,7 @@ module Concerns
 
       def valid?
         p_attributes = attributes
-                                     
+
         p_attributes.delete("avatar_file_name")
         p_attributes.delete("avatar_content_type")
         p_attributes.delete("avatar_file_size")
@@ -50,6 +50,7 @@ module Concerns
 
         si_response = ManageSIModelService.new(si_class_name, @token, p_attributes).check
 
+        # return true if si_response.status_code == 500
         si_results  = si_response.response_object['results']
         validity    = si_results['validity']
         @errors     = validity ? nil : si_results["errors"] 
@@ -76,6 +77,9 @@ module Concerns
         processed_attributes.delete("avatar_updated_at")
 
         if si_class_name == 'Commute'
+          processed_attributes = processed_attributes.merge(detours: self.detours.map(&:id), stations: self.stations.map(&:id))
+
+          # raise processed_attributes.inspect
           if  processed_attributes['time']
             processed_attributes['time'] = processed_attributes['time'].utc.strftime("%H:%M")
           else
@@ -83,7 +87,7 @@ module Concerns
           end
         end
 
-        if valid? 
+        if valid?
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
           if si_response && si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
