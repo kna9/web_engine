@@ -65,8 +65,8 @@ module Web
   end
 end
 
-o = DB::Destination.first(name: "Cergy")
-d = DB::Destination.first(name: "Magny-en-Vexin")
-i = DB::Commute.search( { origin: o, destination: d, time_min: '06:50', time_max: '23:30', day_of_week: [0, 1, 3]}).last
-i.waypoints_with_distance_from_departure
+# o = DB::Destination.first(name: "Cergy")
+# d = DB::Destination.first(name: "Magny-en-Vexin")
+# i = DB::Commute.search( { origin: o, destination: d, time_min: '06:50', time_max: '23:30', day_of_week: [0, 1, 3]}).last
+# i.waypoints_with_distance_from_departure
 
