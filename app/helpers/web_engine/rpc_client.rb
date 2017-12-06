@@ -141,7 +141,9 @@ module WebEngine
       check_authenticated
       status_messages = {
         403 => 'Invalid authtoken',
-        404 => 'Commute id not found'
+        404 => 'Commute id not found',
+        201 => 'OK',
+        200 => 'OK'
       }
       params = {
         authentication_token: authentication_token,
