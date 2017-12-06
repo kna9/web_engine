@@ -90,10 +90,11 @@ module Concerns
         if valid?
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
-          return { si_response: si_response, str: si_response.inspect, cls: si_response.class.name, result: si_response.result }
+          #return { si_response: si_response, str: si_response.inspect, cls: si_response.class.name, result: si_response.result }
 
-          if si_response && si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
-            return si_response.response_object['results']['id']
+          # if si_response && si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
+          if si_response && si_response.result  && si_response.result['commute_id']
+            return si_response.result['commute_id']
           else
             return true
           end
