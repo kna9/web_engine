@@ -90,6 +90,8 @@ module Concerns
         if valid?
           si_response = ManageSIModelService.new(si_class_name, @token, processed_attributes).put
 
+          return si_response.inspect
+
           if si_response && si_response.response_object && si_response.response_object['results'] && si_response.response_object['results']['id']
             return si_response.response_object['results']['id']
           else
