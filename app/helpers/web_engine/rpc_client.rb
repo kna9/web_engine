@@ -144,7 +144,23 @@ module WebEngine
         404 => 'Commute id not found'
       }
       params = {
-        authentication_token: authentication_token
+        authentication_token: authentication_token,
+        action: 'put'
+      }
+      params.merge!(args)
+
+      call 'user.declare_commute', status_messages, params
+    end
+
+    def delete_commute(args)
+      check_authenticated
+      status_messages = {
+        403 => 'Invalid authtoken',
+        404 => 'Commute id not found'
+      }
+      params = {
+        authentication_token: authentication_token,
+        action: 'delete'
       }
       params.merge!(args)
 

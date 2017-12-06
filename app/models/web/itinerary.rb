@@ -28,6 +28,7 @@ module Web
 
     def get_waypoints_with_distance_from_departure
       # FIXME : entre chaques points en vol d'oiseau
+      # FIXME : raise si le nombre de waypoints trop important
 
       waypoints_with_distance = []
 
@@ -63,3 +64,9 @@ module Web
     end
   end
 end
+
+o = DB::Destination.first(name: "Cergy")
+d = DB::Destination.first(name: "Magny-en-Vexin")
+i = DB::Commute.search( { origin: o, destination: d, time_min: '06:50', time_max: '23:30', day_of_week: [0, 1, 3]}).last
+i.waypoints_with_distance_from_departure
+
